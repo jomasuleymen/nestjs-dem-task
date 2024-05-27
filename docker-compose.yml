@@ -1,0 +1,27 @@
+version: '3.9'
+
+services:
+  demetra-db:
+    image: postgres
+    restart: always
+    ports:
+      - 5432:5432
+    volumes:
+      - db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=demetra
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+
+  demetra-redis:
+    image: redis:alpine
+    restart: always
+    ports:
+      - 6379:6379
+    command: redis-server --requirepass password
+    volumes:
+      - redis-data:/data
+
+volumes:
+  db:
+  redis-data:
