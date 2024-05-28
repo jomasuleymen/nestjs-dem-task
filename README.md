@@ -10,7 +10,6 @@ Before starting the project, ensure you have the following prerequisites install
 	```bash
 	docker-compose up -d
 	```
-	These commands are necessary to generate and apply database migrations, ensuring that the database schema is up-to-date with the latest changes.
 
 - Install dependencies
 	```bash
