@@ -1,4 +1,4 @@
-import { ServiceException } from "src/exceptions/service.exception";
+import { ServiceException } from "src/filters/service-exception.filter";
 
 export class UserEmailExistsException extends ServiceException {
 	constructor() {

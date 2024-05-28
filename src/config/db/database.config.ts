@@ -1,12 +1,7 @@
 import { TypeOrmModuleOptions } from "@nestjs/typeorm";
-import dotenv from "dotenv";
 import path from "path";
 import { DataSourceOptions } from "typeorm";
-import { rootPath } from "../constants";
-
-dotenv.config();
-
-const isProd = process.env.NODE_ENV === "production";
+import { isProd, rootPath } from "../constants";
 
 export const dataSourceOptions: DataSourceOptions = {
 	type: "postgres",

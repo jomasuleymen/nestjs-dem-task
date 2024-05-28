@@ -1,18 +1,21 @@
 import { Cache, CACHE_MANAGER } from "@nestjs/cache-manager";
 import {
+	applyDecorators,
 	CallHandler,
 	ExecutionContext,
 	Inject,
 	Injectable,
 	NestInterceptor,
+	SetMetadata,
+	UseInterceptors,
 } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 import { Request } from "express";
 import { Observable, of, tap } from "rxjs";
 
-export const METADATA_EXTERNAL_CACHE_KEY = "caches-key";
+const CACHE_OPTIONS = "caches-key";
 
-export type ExternalCacheOptions = {
+type ExternalCacheOptions = {
 	/**
 	 * List of query keys that you want to be included in the cache key.
 	 * They will be extracted from request query parameters.
@@ -21,9 +24,8 @@ export type ExternalCacheOptions = {
 	ttl: number;
 };
 
-
 @Injectable()
-export class ExternalCacheInterceptor implements NestInterceptor {
+class ExternalCacheInterceptor implements NestInterceptor {
 	constructor(
 		@Inject(CACHE_MANAGER)
 		private readonly cacheManager: Cache,
@@ -38,11 +40,11 @@ export class ExternalCacheInterceptor implements NestInterceptor {
 		const { path } = request;
 
 		// Retrieve the cache options from the request handler
-		const cacheOptions: ExternalCacheOptions =
-			this.reflector.get<ExternalCacheOptions>(
-				METADATA_EXTERNAL_CACHE_KEY,
-				context.getHandler()
-			);
+		// options from controller
+		const cacheOptions = this.reflector.get<ExternalCacheOptions>(
+			CACHE_OPTIONS,
+			context.getHandler()
+		);
 
 		/**
 		 * cacheOptions.queries = ["id", "key2"]
@@ -71,7 +73,6 @@ export class ExternalCacheInterceptor implements NestInterceptor {
 		const { queries: cacheQueries } = cacheOptions;
 		const { query: requestQueries } = request;
 
-		// if not enogh queries are provided, dont check the cache
 		if (
 			!cacheQueries ||
 			Object.keys(requestQueries).length < cacheQueries.length
@@ -87,3 +88,17 @@ export class ExternalCacheInterceptor implements NestInterceptor {
 		return foundQueries.join(":");
 	}
 }
+
+export const ExternalCache = (
+	cacheOptions: ExternalCacheOptions
+): MethodDecorator => {
+	if (cacheOptions && cacheOptions.queries?.length) {
+		return applyDecorators(
+			SetMetadata(CACHE_OPTIONS, cacheOptions),
+			UseInterceptors(ExternalCacheInterceptor)
+		);
+	}
+
+	// if no provided cache keys, dont cache nothing
+	return applyDecorators();
+};

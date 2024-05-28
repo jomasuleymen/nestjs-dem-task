@@ -10,7 +10,7 @@ import {
 	UseInterceptors,
 } from "@nestjs/common";
 import ms from "ms";
-import { ExternalCache } from "src/decorators/external-cache";
+import { ExternalCache } from "src/interceptors/cache.interceptor";
 import { ResponseInterceptor } from "src/interceptors/response.interceptor";
 import CreateUserDto from "./dto/create-user.dto";
 import { UserService } from "./user.service";

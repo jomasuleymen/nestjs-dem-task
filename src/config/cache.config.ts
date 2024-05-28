@@ -3,21 +3,21 @@ import { ConfigService } from "@nestjs/config";
 import { redisStore } from "cache-manager-redis-yet";
 import type { RedisClientOptions } from "redis";
 
+export const getRedisConfig = (config: ConfigService) => ({
+	host: config.get<string>("REDIS_HOST", "localhost"),
+	port: config.get<number>("REDIS_PORT", 6379),
+	password: config.get<string>("REDIS_PASSWORD"),
+});
+
 export const getRedisClientOptions = (
 	config: ConfigService
 ): CacheOptions<RedisClientOptions> => {
+	const redisConfig = getRedisConfig(config);
+	const { host, port, password } = redisConfig;
+
 	return {
 		store: redisStore,
-		url: getRedisUrl(config),
-		password: config.get("REDIS_PASSWORD"),
+		url: `redis://${host}:${port}`,
+		password,
 	};
-};
-
-const getRedisUrl = (config: ConfigService) => {
-	if (config.get("REDIS_URL")) {
-		return config.get<string>("REDIS_URL");
-	}
-	const host = config.get<string>("REDIS_HOST", "localhost");
-	const port = config.get<number>("REDIS_PORT", 6379);
-	return `redis://${host}:${port}`;
 };
