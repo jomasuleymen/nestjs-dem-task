@@ -1,3 +1,4 @@
+import { Exclude } from "class-transformer";
 import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity({
@@ -7,7 +8,7 @@ export class User {
 	@PrimaryGeneratedColumn("increment")
 	id: number;
 
-	@Column({ type: "varchar", length: 30, unique: true, nullable: false })
+	@Column({ type: "varchar", length: 30, nullable: false })
 	username: string;
 
 	@Index()
@@ -15,8 +16,10 @@ export class User {
 	email: string;
 
 	@Column({ type: "boolean", default: false })
-	status: Date;
+	@Exclude()
+	status: boolean;
 
 	@Column({ type: "varchar", nullable: false, select: false })
+	@Exclude()
 	password: string;
 }

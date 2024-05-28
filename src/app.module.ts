@@ -1,3 +1,4 @@
+import { BullModule } from "@nestjs/bull";
 import { CacheModule } from "@nestjs/cache-manager";
 import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
@@ -18,6 +19,17 @@ import { UserModule } from "./user/user.module";
 			isGlobal: true,
 			inject: [ConfigService],
 			useFactory: getRedisClientOptions,
+		}),
+		BullModule.forRoot({
+			prefix: "bull",
+			redis: {
+				host: "localhost",
+				port: 6379,
+				password: "password",
+			},
+			defaultJobOptions: {
+				removeOnComplete: true,
+			},
 		}),
 		UserModule,
 	],

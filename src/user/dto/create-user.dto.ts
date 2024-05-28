@@ -15,6 +15,7 @@ class CreateUserDto {
 	@IsEmail()
 	email: string;
 
+	@IsNotEmpty()
 	@IsStrongPassword(
 		{
 			minLength: 6,
@@ -24,7 +25,7 @@ class CreateUserDto {
 			minLowercase: 1,
 		},
 		{
-			message: "Password is too weak",
+			message: "password is too weak",
 		}
 	)
 	password: string;
